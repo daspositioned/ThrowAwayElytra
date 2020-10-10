@@ -1,0 +1,7 @@
+main: net.seliba.taelytra.ThrowAwayElytra
+name: ThrowAwayElytra
+version: '1.0'
+api-version: '1.16'
+author: Seliba
+depend:
+  - WorldGuard
