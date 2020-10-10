@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 
 
-class ElytraScheduler(private val javaPlugin: JavaPlugin, private val delay: Long, private val regionName: String, private val elytraItem: ItemStack) {
+class ElytraScheduler(private val javaPlugin: JavaPlugin, private val delay: Long, private val permission: String?, private val regionName: String, private val elytraItem: ItemStack) {
 
     private var hasStarted = false
     private var regionContainer: RegionContainer? = null
@@ -45,16 +45,18 @@ class ElytraScheduler(private val javaPlugin: JavaPlugin, private val delay: Lon
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(javaPlugin, Thread {
             Bukkit.getOnlinePlayers().forEach {
-                val query: RegionQuery = regionContainer!!.createQuery()
-                val applicableRegions = query.getApplicableRegions(BukkitAdapter.adapt(it.location))
-                if (applicableRegions.contains(region)) {
-                    if (it.inventory.chestplate == null) {
-                        it.inventory.chestplate = elytraItem
-                    }
-                } else {
-                    if (it.inventory.chestplate != null && it.inventory.chestplate!!.isAboutSimilar(elytraItem)) {
-                        if (it.location.clone().subtract(0.0, 1.0, 0.0).block.type != Material.AIR) {
-                            it.inventory.chestplate = null
+                if (permission == null || it.hasPermission(permission)) {
+                    val query: RegionQuery = regionContainer!!.createQuery()
+                    val applicableRegions = query.getApplicableRegions(BukkitAdapter.adapt(it.location))
+                    if (applicableRegions.contains(region)) {
+                        if (it.inventory.chestplate == null) {
+                            it.inventory.chestplate = elytraItem
+                        }
+                    } else {
+                        if (it.inventory.chestplate != null && it.inventory.chestplate!!.isAboutSimilar(elytraItem)) {
+                            if (it.location.clone().subtract(0.0, 1.0, 0.0).block.type != Material.AIR) {
+                                it.inventory.chestplate = null
+                            }
                         }
                     }
                 }
