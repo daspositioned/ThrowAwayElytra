@@ -1,12 +1,10 @@
-import javax.swing.plaf.metal.MetalIconFactory
-
 plugins {
     kotlin("jvm") version "1.4.10"
     id("com.github.johnrengelman.shadow") version "6.1.0"
 }
 
 group = "net.seliba"
-version = "1.0-SNAPSHOT"
+version = "1.2"
 
 repositories {
     mavenCentral()
