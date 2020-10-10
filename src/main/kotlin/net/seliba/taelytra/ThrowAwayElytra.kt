@@ -14,6 +14,7 @@ class ThrowAwayElytra : JavaPlugin() {
 
     private lateinit var config: Config
 
+    private var permission: String? = null
     private var regionName: String? = null
     private var elytraCheckInterval: Long? = null
     private var itemStack: ItemStack? = null
@@ -22,7 +23,7 @@ class ThrowAwayElytra : JavaPlugin() {
         initializeConfig()
         parseConfig()
         startScheduler()
-        if (ElytraScheduler(this, elytraCheckInterval!!, regionName!!, itemStack!!).start()) {
+        if (ElytraScheduler(this, elytraCheckInterval!!, permission, regionName!!, itemStack!!).start()) {
             logger.info("Started successfully!")
         }
     }
@@ -31,12 +32,17 @@ class ThrowAwayElytra : JavaPlugin() {
         config = Config("config.yml", this)
         config.setDefault("spawn-worldguard-region", "spawn")
         config.setDefault("elytra-check-interval-in-ticks", 20L)
+        config.setDefault("permission.enable", false)
+        config.setDefault("permission.name", "throwawayelytra.use")
         config.setDefault("item.name", "&6Throw-Away Elytra")
         config.setDefault("item.lore", listOf("&aElytra which will &cdisappear &aafter", "&ayou &cland &aoutside of spawn"))
         config.save()
     }
 
     private fun parseConfig() {
+        if (config.getBoolean("permission.enable")) {
+            permission = config.getString("permission.name")
+        }
         regionName = config.getString("spawn-worldguard-region")
         elytraCheckInterval = config.getLong("elytra-check-interval-in-ticks")
 
