@@ -2,7 +2,7 @@
 
 A simple spigot plugin that gives Elytras to players in certain WorldGuard regions and removes them after a successful landing or leaving the area.
 
-![Throw Away Elytra Demo](https://media.giphy.com/media/JKH0benD4doBAf3jJB/giphy.gif)
+![Throw Away Elytra Demo](https://s8.gifyu.com/images/Throw-Away-Elytra-Demo.gif)
 
 ## Dependencies
 
