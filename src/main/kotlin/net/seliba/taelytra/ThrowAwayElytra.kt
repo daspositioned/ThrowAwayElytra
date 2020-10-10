@@ -2,6 +2,7 @@ package net.seliba.taelytra
 
 import net.seliba.taelytra.configuration.Config
 import net.seliba.taelytra.listener.InventoryClickListener
+import net.seliba.taelytra.listener.PlayerDeathListener
 import net.seliba.taelytra.scheduler.ElytraScheduler
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -49,6 +50,7 @@ class ThrowAwayElytra : JavaPlugin() {
     private fun startScheduler() {
         val pluginManager = Bukkit.getPluginManager()
         pluginManager.registerEvents(InventoryClickListener(itemStack!!), this)
+        pluginManager.registerEvents(PlayerDeathListener(itemStack!!), this)
     }
 
 }
