@@ -8,11 +8,13 @@ import com.sk89q.worldguard.protection.regions.RegionQuery
 import net.seliba.taelytra.utils.ItemStackComparator.Companion.isAboutSimilar
 import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.Particle
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 
 
-class ElytraScheduler(private val javaPlugin: JavaPlugin, private val delay: Long, private val permission: String?, private val regionName: String, private val elytraItem: ItemStack) {
+class ElytraScheduler(private val javaPlugin: JavaPlugin, private val delay: Long, private val permission: String?, private val regionName: String, private val elytraItem: ItemStack, private val particle: Particle?) {
 
     private var hasStarted = false
     private var regionContainer: RegionContainer? = null
@@ -45,25 +47,56 @@ class ElytraScheduler(private val javaPlugin: JavaPlugin, private val delay: Lon
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(javaPlugin, Thread {
             Bukkit.getOnlinePlayers().forEach {
-                if (permission == null || it.hasPermission(permission)) {
-                    val query: RegionQuery = regionContainer!!.createQuery()
-                    val applicableRegions = query.getApplicableRegions(BukkitAdapter.adapt(it.location))
-                    if (applicableRegions.contains(region)) {
-                        if (it.inventory.chestplate == null) {
-                            it.inventory.chestplate = elytraItem
-                        }
-                    } else {
-                        if (it.inventory.chestplate != null && it.inventory.chestplate!!.isAboutSimilar(elytraItem)) {
-                            if (it.location.clone().subtract(0.0, 1.0, 0.0).block.type != Material.AIR) {
-                                it.inventory.chestplate = null
-                            }
-                        }
-                    }
+                if (hasElytraPermission(it)) {
+                    performElytraCheck(it)
                 }
             }
         }, delay, delay)
 
         return true
+    }
+
+    private fun hasElytraPermission(player: Player) : Boolean {
+        return permission == null || player.hasPermission(permission)
+    }
+
+    private fun performElytraCheck(player: Player) {
+        val query: RegionQuery = regionContainer!!.createQuery()
+        val applicableRegions = query.getApplicableRegions(BukkitAdapter.adapt(player.location))
+        if (applicableRegions.contains(region)) {
+            giveElytraItem(player)
+        } else {
+            handlePlayerLanding(player)
+        }
+    }
+
+    private fun giveElytraItem(player: Player) {
+        if (player.inventory.chestplate == null) {
+            player.inventory.chestplate = elytraItem
+        }
+    }
+
+    private fun handlePlayerLanding(player: Player) {
+        if (!hasElytra(player)) {
+            return
+        }
+
+        if (!isOnGround(player)) {
+            return
+        }
+
+        if (particle != null) {
+            player.spawnParticle(particle, player.location.clone().add(0.0, 1.0, 0.0), 50)
+        }
+        player.inventory.chestplate = null
+    }
+
+    private fun hasElytra(player: Player) : Boolean {
+        return player.inventory.chestplate != null && player.inventory.chestplate!!.isAboutSimilar(elytraItem)
+    }
+
+    private fun isOnGround(player: Player) : Boolean {
+        return player.location.clone().subtract(0.0, 1.0, 0.0).block.type != Material.AIR
     }
 
 }
