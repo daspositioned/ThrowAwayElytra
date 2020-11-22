@@ -18,7 +18,3 @@ dependencies {
     shadow("org.spigotmc:spigot-api:1.16.3-R0.1-SNAPSHOT")
     shadow("com.sk89q.worldguard:worldguard-bukkit:7.0.4")
 }
-
-configurations {
-
-}
